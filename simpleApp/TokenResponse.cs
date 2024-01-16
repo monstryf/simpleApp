@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace simpleApp
 {
-    internal record TokenResponse
+    public record TokenResponse
     {
         [JsonPropertyName("token_type")]
         public string token_type { get; set; }

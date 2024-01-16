@@ -25,6 +25,10 @@ namespace simpleApp
         readonly string Password;
 
    
+        static Authenticator()
+        {
+
+        }
         public Authenticator(string baseUrl ,string UserName, string Password) : base("")
         {
             BaseUrl = baseUrl;
@@ -42,14 +46,16 @@ namespace simpleApp
         /// <returns></returns>
         protected override async ValueTask<Parameter> GetAuthenticationParameter(string AccessToken)
         {
-           var Token =  await LogIn<TokenResponse>();
+            var respons = await LogIn();
+            var Token = JsonConvert.DeserializeObject<TokenResponse>(respons.Content);
+
             return new HeaderParameter(KnownHeaders.Authorization, Token.access_token);
         }
         /// <summary>
         /// Use To LogIn
         /// </summary>
         /// <returns></returns>
-        public async Task<T> LogIn<T>()
+        public async Task<RestResponse> LogIn()
         {
             var Options = new RestClientOptions(BaseUrl);
             //For Angora The SSl 
@@ -67,8 +73,8 @@ namespace simpleApp
             Request.AddParameter("username", UserName);
             Request.AddParameter("password", Password);
             Request.AddParameter("scope", "profile roles email phone AgentAppServices");
-            var response = await Client.ExecuteAsync<T>(Request);
-            return response.Data;
+            var response = await Client.ExecuteAsync(Request);
+            return response;
         }
         /// <summary>
         /// Use For Generate Client Secret

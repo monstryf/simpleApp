@@ -19,7 +19,8 @@ namespace simpleApp
         private static string Token;
         public async Task<string> Login(string UserName, string Password)
         {
-            var Respons = await new Authenticator(AuthUrl, UserName, Password).LogIn<TokenResponse>()       ;
+            var Request = await new Authenticator(AuthUrl, UserName, Password).LogIn();
+            var Respons = JsonConvert.DeserializeObject<TokenResponse>(Request.Content);
             Token = Respons.access_token;
             return Token;
         }
