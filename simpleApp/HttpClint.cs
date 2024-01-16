@@ -1,62 +1,75 @@
-﻿using RestSharp;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RestSharp;
 using RestSharp.Authenticators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace simpleApp
 {
-    internal class HttpClint
+    public class HttpClint
     {
-        private readonly string Url = "https://192.168.88.51:44355";
-        public async Task<RestResponse> LogIn(string ClientId, string GrantType, string UserName, string Password)
+        private readonly string Url = "https://192.168.88.51:44357/api/";
+        private readonly string AuthUrl = "https://192.168.88.51:44357";
+        private static string Token;
+        public async Task<string> Login(string UserName, string Password)
         {
-            var options = new RestClientOptions(Url)
+            var Respons = await new Authenticator(AuthUrl, UserName, Password).LogIn<TokenResponse>()       ;
+            Token = Respons.access_token;
+            return Token;
+        }
+        public async Task<T> Get<T>(string ModuleType, string controller, string option)
+        {
+            var authenticator = new JwtAuthenticator(Token);
+            var Options = new RestClientOptions(Url + ModuleType + controller)
             {
-            Authenticator = new HttpBasicAuthenticator(ClientId, GrantType),
+                Authenticator = authenticator
             };
-            using var client = new RestClient(options);
-
-            var request = new RestRequest("/auth/connect/token", Method.Post);
-          /*  request.AddParameter("client_id", "AgentApp");
-            request.AddParameter("grant_type", "password");*/
-            request.AddParameter("username", "agent1");
-            request.AddParameter("password", "Aa@123456");
-            RestResponse response = await client.ExecuteAsync(request);
-            var dataTest = response;
-            return response;
+            Options.RemoteCertificateValidationCallback = (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) =>
+            {
+                return true;
+            };
+            var Request = new RestRequest(option);
+            using var client = new RestClient(Options);
+            var Response = await client.ExecuteAsync<T>(Request);
+            return Response.Data;
         }
-    public async Task<T> Get<T>(string moduleType)
+        public async Task<T> GetById<T>(string ModuleType, string controller, string option, string Key,string Valu)
         {
-            var options = new RestClient(Url+moduleType);
-            var request = new RestRequest("get_all");
-            var response = await options.GetAsync<T>(request);
-            return response;
+            var Authenticator = new JwtAuthenticator(Token);
+            var Options = new RestClientOptions(Url + ModuleType + controller)
+            {
+                Authenticator = Authenticator
+            };
+            Options.RemoteCertificateValidationCallback = (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) =>
+            {
+                return true;
+            };
+            using var client = new RestClient(Options);
+            var Request = new RestRequest(option).AddParameter(Key,Valu);
+            var Response = await client.ExecuteAsync<T>(Request);
+            return Response.Data;
         }
-        public async Task<T> GetById<T>(string ModuleType,string Id)
+        public async Task<T> Post<T>(string ModuleType, params T[] Body)
         {
-            var options = new RestClient(Url+ModuleType);
-            var request = new RestRequest("get_by_id").AddParameter("Id", Id);
-            var response = await options.GetAsync<T>(request);
-            return response;
+            var Options = new RestClient(Url + ModuleType);
+            var Request = new RestRequest("create");
+            Request.AddJsonBody(Body);
+            var Response = await Options.PostAsync<T>(Request);
+            return Response;
         }
-        public async Task<T> Post<T>(string ModuleType, params T[] body)
+        public async Task<T> Put<T>(string ModuleType, string Id, params T[] Body)
         {
-            var options = new RestClient(Url+ModuleType);
-           var request = new RestRequest("create");
-            request.AddJsonBody(body);
-           var response = await options.PostAsync<T>(request);
-            return response;
-        }
-        public async Task<T> Put<T>(string ModuleType, string Id, params T[] body)
-        {
-            var options = new RestClient(Url + ModuleType);
-            var request = new RestRequest("create").AddParameter("Id", Id);
-            request.AddJsonBody(body);
-            var response = await options.PostAsync<T>(request);
-            return response;
+            var Options = new RestClient(Url + ModuleType);
+            var Request = new RestRequest("create").AddParameter("Id", Id);
+            Request.AddJsonBody(Body);
+            var Response = await Options.PostAsync<T>(Request);
+            return Response;
         }
     }
 }
