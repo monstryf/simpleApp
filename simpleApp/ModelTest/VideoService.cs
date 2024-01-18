@@ -11,6 +11,8 @@ namespace simpleApp.ModelTest
     public class VideoService
     {
         private IFileResder _fileResder { get; set; }
+   
+
         public VideoService(IFileResder fileResder)
         {
              _fileResder = fileResder;
