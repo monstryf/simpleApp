@@ -1,4 +1,4 @@
-﻿namespace simpleApi.Model.DTOs
+﻿namespace simpleApp.SimpleApi
 {
     internal class AddressDTOs
     {

@@ -1,9 +1,15 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RestSharp;
-using simpleApi.Model.DTOs;
+
 using simpleApp;
+using simpleApp.GenericsType;
 using simpleApp.Model;
+using simpleApp.SimpleApi;
+var Heid = false;
+/// restSharp
+if (Heid)
+{
 var Http = new HttpClint();
 var Login = await Http.Login("agent1", "Aa@123456");
 var res = Login;
@@ -13,7 +19,8 @@ Articles.ForEach(x =>
 {
     Console.WriteLine(x);
 });
-var Heid = false;
+}
+/// SimpleApi
 if (Heid)
 {
     var user = new UserDTOS();
@@ -63,3 +70,37 @@ if (Heid)
     Console.WriteLine(response.Content);
     Console.ReadKey();
 }
+/// GenericsType 
+
+// Implement The BetterList class Type Int
+BetterList<int> intList = new();
+// Add item to the list of type int
+intList.AddToList(1);
+// Implement The BetterList class Type PersonRecord
+BetterList<PersonRecord> people = new();
+// Add item to the list of type PersonRecord
+people.AddToList(new("John", "Doe"));
+
+// Implement The SampleClass class Type Person and int
+SampleClass<PersonModel, int> sample;
+// Implement The MoreSampleClass class Type  int
+MathOperations<int> intMath = new();
+// Add two numbers of type int
+Console.WriteLine(intMath.Add(1, 4));
+// Implement The MoreSampleClass class Type  double
+MathOperations<double> doubleMath = new();
+// Add two numbers of type double
+Console.WriteLine(doubleMath.Add(1.5, 4.3));
+class PersonModel
+{
+    public int Id { get; set; }
+    public PersonModel()
+    {
+
+    }
+    public PersonModel(int startingId)
+    {
+
+    }
+}
+record PersonRecord(string FirstName, string LastName);

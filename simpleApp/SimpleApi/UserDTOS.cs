@@ -1,8 +1,7 @@
 ﻿using RestSharp;
-using simpleApi.Model.DTOs;
 using simpleApp;
 
-namespace simpleApi.Model.DTOs
+namespace simpleApp.SimpleApi
 {
     internal class UserDTOS
     {

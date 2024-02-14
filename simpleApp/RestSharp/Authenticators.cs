@@ -11,7 +11,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
 
-namespace simpleApp
+namespace simpleApp.RestSharp
 {
     /// <summary>
     /// it is for Authentication User 
@@ -24,12 +24,12 @@ namespace simpleApp
         readonly string UserName;
         readonly string Password;
 
-   
+
         static Authenticator()
         {
 
         }
-        public Authenticator(string baseUrl ,string UserName, string Password) : base("")
+        public Authenticator(string baseUrl, string UserName, string Password) : base("")
         {
             BaseUrl = baseUrl;
             ClientId = "AgentApp";
@@ -59,17 +59,17 @@ namespace simpleApp
         {
             var Options = new RestClientOptions(BaseUrl);
             //For Angora The SSl 
-            Options.RemoteCertificateValidationCallback = (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) =>
+            Options.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) =>
             {
                 return true;
             };
             // get Client Secret
-            var Request = new RestRequest("/auth/connect/token",Method.Post );
-            var Hmac = HMAC(Request.Method.ToString(),Request.Resource);
+            var Request = new RestRequest("/auth/connect/token", Method.Post);
+            var Hmac = HMAC(Request.Method.ToString(), Request.Resource);
             using var Client = new RestClient(Options);
             Request.AddHeader("X-HMAC", Hmac);
             Request.AddParameter("client_id", ClientId);
-            Request.AddParameter("grant_type",GrantType);
+            Request.AddParameter("grant_type", GrantType);
             Request.AddParameter("username", UserName);
             Request.AddParameter("password", Password);
             Request.AddParameter("scope", "profile roles email phone AgentAppServices");
@@ -83,16 +83,16 @@ namespace simpleApp
         /// <param name="userName"></param>
         /// <param name="_password"></param>
         /// <returns></returns>
-        private string HMAC(string Method,string GetPath)
+        private string HMAC(string Method, string GetPath)
         {
-          
-            string AppId = "4dfe3e50c45240e8901cf0b3e3cc3a3a"; 
+
+            string AppId = "4dfe3e50c45240e8901cf0b3e3cc3a3a";
             string AppSecret = "AgOmASinx7My06IfEiAXkc6apFmyUSp84q7s2Hs3aik=";
             long ReqDate = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             string Nonce = Guid.NewGuid().ToString();
 
             // Check if client_secret is required and construct bodyRaw
-            string BodyRaw = $"{ClientId}{UserName}{Password}"; 
+            string BodyRaw = $"{ClientId}{UserName}{Password}";
             var Data = $"{ReqDate}\n{BodyRaw}\n{Method}\n{GetPath}\n{string.Empty}".ToLower();
             byte[] SignBytes = new HMACSHA256(Encoding.ASCII.GetBytes(AppSecret)).ComputeHash(Encoding.ASCII.GetBytes(Data));
             string SignString = Convert.ToBase64String(SignBytes);

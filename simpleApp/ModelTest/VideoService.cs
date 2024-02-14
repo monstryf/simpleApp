@@ -1,21 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace simpleApp.ModelTest
 {
     public class VideoService
     {
         private IFileResder _fileResder { get; set; }
-   
+
 
         public VideoService(IFileResder fileResder)
         {
-             _fileResder = fileResder;
+            _fileResder = fileResder;
         }
         public string ReadVideoTitle()
         {
@@ -40,7 +35,7 @@ namespace simpleApp.ModelTest
                 {
                     videoIds.Add(v.Id);
                 }
-                return string.Join(",",videoIds); 
+                return string.Join(",", videoIds);
             }
         }
 

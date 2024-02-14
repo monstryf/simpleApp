@@ -7,11 +7,11 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace simpleApp
+namespace simpleApp.RestSharp
 {
     public static class SSLValidator
     {
-        private static bool OnValidateCertificate(object sender, X509Certificate certificate, X509Chain chain,SslPolicyErrors sslPolicyErrors)
+        private static bool OnValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             return true;
         }

@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Shouldly;
-using simpleApp;
 using simpleApp.Model;
+using simpleApp.RestSharp;
 using System.Net;
 
 namespace RestSharpTest

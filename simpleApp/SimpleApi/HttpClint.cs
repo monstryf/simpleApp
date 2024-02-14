@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using RestSharp.Authenticators;
+using simpleApp.RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace simpleApp
+namespace simpleApp.SimpleApi
 {
     public class HttpClint
     {
@@ -31,7 +32,7 @@ namespace simpleApp
             {
                 Authenticator = authenticator
             };
-            Options.RemoteCertificateValidationCallback = (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) =>
+            Options.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) =>
             {
                 return true;
             };
@@ -40,19 +41,19 @@ namespace simpleApp
             var Response = await client.ExecuteAsync<T>(Request);
             return Response.Data;
         }
-        public async Task<T> GetById<T>(string ModuleType, string controller, string option, string Key,string Valu)
+        public async Task<T> GetById<T>(string ModuleType, string controller, string option, string Key, string Valu)
         {
             var Authenticator = new JwtAuthenticator(Token);
             var Options = new RestClientOptions(Url + ModuleType + controller)
             {
                 Authenticator = Authenticator
             };
-            Options.RemoteCertificateValidationCallback = (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) =>
+            Options.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) =>
             {
                 return true;
             };
             using var client = new RestClient(Options);
-            var Request = new RestRequest(option).AddParameter(Key,Valu);
+            var Request = new RestRequest(option).AddParameter(Key, Valu);
             var Response = await client.ExecuteAsync<T>(Request);
             return Response.Data;
         }
